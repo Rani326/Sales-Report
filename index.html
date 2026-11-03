@@ -20,6 +20,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
     }
 
     /* 헤더 */
@@ -50,6 +51,20 @@
     }
     .month-label span { color: #4a4af4; }
 
+    .header-actions {
+      display: flex; gap: 6px; align-items: center;
+    }
+    .btn-copy-month {
+      border: none; background: #f0f2f8;
+      border-radius: 8px; padding: 6px 10px;
+      font-size: 0.7em; font-weight: 700;
+      color: #4a4af4; cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .btn-copy-month:hover { background: #dddeff; }
+
     /* 월간 요약 바 */
     .monthly-summary {
       display: flex;
@@ -68,7 +83,6 @@
       font-weight: 700;
       color: #bbb;
       letter-spacing: 1px;
-      text-transform: uppercase;
       margin-bottom: 2px;
     }
     .summary-value {
@@ -78,6 +92,8 @@
     .summary-value.card { color: #5568e0; }
     .summary-value.cash { color: #43a047; }
     .summary-value.total { color: #2d2d2d; }
+    .summary-value.orders { color: #e67e22; }
+    .summary-value.consumed { color: #8e44ad; }
 
     /* 요일 헤더 */
     .day-headers {
@@ -117,7 +133,7 @@
       padding: 7px 8px 6px;
       cursor: pointer;
       display: flex; flex-direction: column;
-      gap: 3px; overflow: hidden;
+      gap: 2px; overflow: hidden;
       border: 1.5px solid transparent;
       min-height: 0;
       transition: box-shadow 0.15s, border-color 0.15s;
@@ -152,6 +168,8 @@
     }
     .cell-dot.card { background: #5568e0; }
     .cell-dot.cash { background: #43a047; }
+    .cell-dot.orders { background: #e67e22; }
+    .cell-dot.consumed { background: #8e44ad; }
     .cell-amount { color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     /* 주간합계 셀 */
@@ -169,7 +187,6 @@
     .week-label {
       font-size: 0.58em; font-weight: 800;
       color: #9e9eff; letter-spacing: 1px;
-      text-transform: uppercase;
     }
     .week-row {
       display: flex; flex-direction: column;
@@ -184,6 +201,8 @@
     }
     .week-item.card .label { color: #5568e0; }
     .week-item.cash .label { color: #43a047; }
+    .week-item.orders .label { color: #e67e22; }
+    .week-item.consumed .label { color: #8e44ad; }
     .week-item .val { color: #444; font-weight: 600; }
     .week-divider { height: 1px; background: #dddeff; margin: 2px 0; }
     .week-total-row {
@@ -192,7 +211,7 @@
       font-weight: 800; color: #4a4af4;
     }
 
-    /* 모달 */
+    /* ──── 모달 ──── */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
       background: rgba(30,30,60,0.45);
@@ -201,8 +220,9 @@
     .modal-overlay.open { display: flex; }
     .modal {
       background: #fff; border-radius: 20px;
-      padding: 26px 24px; width: 340px;
+      padding: 26px 24px; width: 360px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.22);
+      max-height: 90vh; overflow-y: auto;
     }
     .modal-date {
       font-size: 0.78em; color: #bbb;
@@ -212,18 +232,19 @@
       font-size: 1.05em; font-weight: 800;
       margin-bottom: 20px;
     }
-    .modal-title span { color: #4a4af4; }
 
     .input-group {
       display: flex; flex-direction: column; gap: 12px;
       margin-bottom: 16px;
     }
+
+    /* 매출 입력행 */
     .input-row {
       display: flex; flex-direction: column; gap: 5px;
     }
     .input-row label {
       font-size: 0.72em; font-weight: 700;
-      letter-spacing: 1px; text-transform: uppercase;
+      letter-spacing: 1px;
     }
     .input-row.card label { color: #5568e0; }
     .input-row.cash label { color: #43a047; }
@@ -238,7 +259,7 @@
     .input-wrap.card-wrap:focus-within { border-color: #5568e0; }
     .input-wrap.cash-wrap:focus-within { border-color: #43a047; }
 
-    .input-wrap input {
+    .input-wrap input[type="number"] {
       flex: 1; border: none; background: transparent;
       padding: 11px 12px;
       font-size: 0.95em; font-family: inherit;
@@ -250,6 +271,135 @@
       font-size: 0.85em; color: #aaa; font-weight: 600;
     }
 
+    /* 구분선 */
+    .section-divider {
+      height: 1px; background: #eee; margin: 4px 0 12px;
+    }
+    .section-title {
+      font-size: 0.72em; font-weight: 700; color: #bbb;
+      letter-spacing: 1px; margin-bottom: 8px;
+    }
+
+    /* ──── 스테퍼 (주문량) ──── */
+    .stepper-row {
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .stepper-label {
+      font-size: 0.75em; font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .stepper-label.orders { color: #e67e22; }
+    .stepper-label.consumed { color: #8e44ad; }
+
+    .stepper {
+      display: flex; align-items: center; gap: 0;
+      background: #fafafa;
+      border: 1.5px solid #eee;
+      border-radius: 12px;
+      overflow: hidden;
+      height: 48px;
+    }
+    .stepper.orders-stepper { border-color: #f5d6b0; }
+    .stepper.consumed-stepper { border-color: #d8b4e8; }
+
+    .stepper-btn {
+      width: 54px; height: 100%;
+      border: none; background: transparent;
+      font-size: 1.5em; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.12s;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .stepper-btn:active { background: #eee; }
+    .stepper-btn.minus { color: #ef5350; border-right: 1px solid #eee; }
+    .stepper-btn.plus  { color: #4a4af4; border-left: 1px solid #eee; }
+    .stepper-btn:disabled { color: #ddd; cursor: default; }
+    .stepper-btn:disabled:active { background: transparent; }
+
+    .stepper-value {
+      flex: 1;
+      text-align: center;
+      font-size: 1.2em;
+      font-weight: 800;
+      color: #2d2d2d;
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+    }
+    .stepper-value .unit {
+      font-size: 0.65em; color: #aaa; font-weight: 600;
+    }
+
+    /* 직접입력 */
+    .stepper-value input {
+      width: 60px;
+      border: none; background: transparent;
+      font-size: 1em; font-weight: 800;
+      text-align: center;
+      color: #2d2d2d;
+      font-family: inherit;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .stepper-value input::-webkit-outer-spin-button,
+    .stepper-value input::-webkit-inner-spin-button {
+      -webkit-appearance: none; margin: 0;
+    }
+
+    /* ──── 소진량 체크박스 + 스테퍼 ──── */
+    .consumed-header {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .consumed-check {
+      display: flex; align-items: center; gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .consumed-check input[type="checkbox"] {
+      display: none;
+    }
+    .check-box {
+      width: 24px; height: 24px;
+      border: 2px solid #d0d0d0;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .check-box::after {
+      content: '';
+      width: 12px; height: 12px;
+      border-radius: 3px;
+      background: #8e44ad;
+      transform: scale(0);
+      transition: transform 0.15s;
+    }
+    .consumed-check input:checked + .check-box {
+      border-color: #8e44ad;
+    }
+    .consumed-check input:checked + .check-box::after {
+      transform: scale(1);
+    }
+    .consumed-check-label {
+      font-size: 0.75em; font-weight: 700;
+      color: #8e44ad; letter-spacing: 1px;
+    }
+
+    .consumed-stepper-wrap {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.25s ease, opacity 0.2s ease, margin 0.25s ease;
+      margin-top: 0;
+    }
+    .consumed-stepper-wrap.open {
+      max-height: 60px;
+      opacity: 1;
+      margin-top: 6px;
+    }
+
+    /* 합계 */
     .modal-total {
       background: #f4f4ff; border-radius: 10px;
       padding: 12px 14px;
@@ -291,7 +441,38 @@
     }
     .btn-cancel:hover { background: #e2e4f0; }
 
-    /* ── Firebase 상태 표시 ── */
+    .btn-copy-day {
+      width: 100%; padding: 11px;
+      background: #fff; color: #4a4af4;
+      border: 1.5px solid #4a4af4; border-radius: 10px;
+      font-size: 0.88em; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+      margin-bottom: 12px;
+      transition: background 0.15s;
+    }
+    .btn-copy-day:hover { background: #f4f4ff; }
+
+    /* ── 토스트 ── */
+    .toast {
+      position: fixed;
+      bottom: 60px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #2d2d2d; color: #fff;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 0.82em; font-weight: 600;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      z-index: 200;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Firebase 상태 ── */
     .fb-status {
       position: fixed;
       bottom: 14px; right: 14px;
@@ -303,12 +484,10 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.12);
       display: flex; align-items: center; gap: 6px;
       z-index: 50;
-      transition: opacity 0.3s;
     }
     .fb-dot {
       width: 7px; height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
+      border-radius: 50%; flex-shrink: 0;
     }
     .fb-dot.connected  { background: #43a047; }
     .fb-dot.local      { background: #ffa726; }
@@ -316,7 +495,7 @@
     .fb-dot.error      { background: #ef5350; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-    /* ── 마이그레이션 배너 ── */
+    /* ── 마이그레이션 ── */
     .migrate-banner {
       display: none;
       position: fixed; bottom: 52px; right: 14px;
@@ -350,15 +529,14 @@
       .month-label { font-size: 1em; }
       .nav-btn { width: 30px; height: 30px; font-size: 0.9em; }
 
-      /* 월간 요약 2x2 */
       .monthly-summary { flex-wrap: wrap; }
-      .summary-item { flex: 0 0 50%; border-right: none; border-bottom: 1px solid #f0f0f0; }
-      .summary-item:nth-child(odd) { border-right: 1px solid #f0f0f0; }
-      .summary-item:last-child, .summary-item:nth-last-child(2):nth-child(odd) { border-bottom: none; }
+      .summary-item { flex: 0 0 33.33%; border-right: none; border-bottom: 1px solid #f0f0f0; }
+      .summary-item:nth-child(3n) { border-right: none; }
+      .summary-item:nth-child(-n+3) { border-right: 1px solid #f0f0f0; }
+      .summary-item:nth-child(3) { border-right: none; }
       .summary-label { font-size: 0.6em; }
       .summary-value { font-size: 0.82em; }
 
-      /* 주간합계 열 숨김 */
       .day-headers { grid-template-columns: repeat(7, 1fr); }
       .day-header.week-col { display: none; }
       .days-grid { grid-template-columns: repeat(7, 1fr) !important; }
@@ -366,16 +544,15 @@
 
       .calendar-wrap { padding: 4px; }
       .days-grid { gap: 3px; }
-      .day-cell { padding: 4px 3px; border-radius: 7px; gap: 2px; }
+      .day-cell { padding: 4px 3px; border-radius: 7px; gap: 1px; }
       .day-num { font-size: 0.7em; width: 18px; height: 18px; }
       .cell-total { font-size: 0.7em; }
       .cell-row { font-size: 0.57em; }
       .cell-dot { width: 4px; height: 4px; }
 
-      /* 모달 */
       .modal { width: 92vw; padding: 22px 18px; }
+      .stepper-btn { width: 48px; font-size: 1.3em; }
 
-      /* 상태 표시 작게 */
       .fb-status { bottom: 10px; right: 10px; font-size: 0.62em; padding: 4px 9px; }
     }
   </style>
@@ -386,7 +563,10 @@
   <div class="header-top">
     <button class="nav-btn" id="btn-prev">&#8592;</button>
     <div class="month-label" id="month-label"></div>
-    <button class="nav-btn" id="btn-next">&#8594;</button>
+    <div class="header-actions">
+      <button class="btn-copy-month" onclick="copyMonthSummary()">📋 월간 복사</button>
+      <button class="nav-btn" id="btn-next">&#8594;</button>
+    </div>
   </div>
   <div class="monthly-summary">
     <div class="summary-item">
@@ -400,6 +580,14 @@
     <div class="summary-item">
       <div class="summary-label">월 총매출</div>
       <div class="summary-value total" id="sum-total">-</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-label">총 주문량</div>
+      <div class="summary-value orders" id="sum-orders">-</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-label">총 소진량</div>
+      <div class="summary-value consumed" id="sum-consumed">-</div>
     </div>
     <div class="summary-item">
       <div class="summary-label">영업일수</div>
@@ -423,31 +611,75 @@
   <div class="days-grid" id="days-grid"></div>
 </div>
 
-<!-- 매출 입력 모달 -->
+<!-- ──── 매출 입력 모달 ──── -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <div class="modal-date" id="modal-date"></div>
     <div class="modal-title">매출 입력</div>
+
     <div class="input-group">
+      <!-- 카드 매출 -->
       <div class="input-row card">
         <label>카드 매출</label>
         <div class="input-wrap card-wrap">
-          <input type="number" id="input-card" placeholder="0" min="0" step="1000" />
+          <input type="number" id="input-card" placeholder="0" min="0" step="1000" inputmode="numeric" />
           <span class="input-unit">원</span>
         </div>
       </div>
+      <!-- 현금 매출 -->
       <div class="input-row cash">
         <label>현금 매출</label>
         <div class="input-wrap cash-wrap">
-          <input type="number" id="input-cash" placeholder="0" min="0" step="1000" />
+          <input type="number" id="input-cash" placeholder="0" min="0" step="1000" inputmode="numeric" />
           <span class="input-unit">원</span>
         </div>
       </div>
+
+      <div class="section-divider"></div>
+      <div class="section-title">수량 관리</div>
+
+      <!-- 주문량 스테퍼 -->
+      <div class="stepper-row">
+        <div class="stepper-label orders">주문량</div>
+        <div class="stepper orders-stepper">
+          <button type="button" class="stepper-btn minus" onclick="stepOrders(-1)">−</button>
+          <div class="stepper-value">
+            <input type="number" id="input-orders" value="0" min="0" inputmode="numeric" onchange="clampOrders()" />
+            <span class="unit">개</span>
+          </div>
+          <button type="button" class="stepper-btn plus" onclick="stepOrders(1)">+</button>
+        </div>
+      </div>
+
+      <!-- 소진량: 체크박스 + 스테퍼 -->
+      <div class="stepper-row">
+        <div class="consumed-header">
+          <label class="consumed-check">
+            <input type="checkbox" id="consumed-toggle" onchange="toggleConsumed()" />
+            <span class="check-box"></span>
+            <span class="consumed-check-label">소진 기록</span>
+          </label>
+        </div>
+        <div class="consumed-stepper-wrap" id="consumed-stepper-wrap">
+          <div class="stepper consumed-stepper">
+            <button type="button" class="stepper-btn minus" onclick="stepConsumed(-1)">−</button>
+            <div class="stepper-value">
+              <input type="number" id="input-consumed" value="0" min="0" inputmode="numeric" onchange="clampConsumed()" />
+              <span class="unit">개</span>
+            </div>
+            <button type="button" class="stepper-btn plus" onclick="stepConsumed(1)">+</button>
+          </div>
+        </div>
+      </div>
     </div>
+
     <div class="modal-total">
       <span class="modal-total-label">일 합계</span>
       <span class="modal-total-value" id="modal-total-value">0원</span>
     </div>
+
+    <button class="btn-copy-day" id="btn-copy-day" onclick="copyDaySummary()">📋 이 날 매출 복사 (문자용)</button>
+
     <div class="modal-btns">
       <button class="btn-save" id="btn-save" onclick="saveEntry()">저장</button>
       <button class="btn-delete" id="btn-delete" onclick="deleteEntry()">삭제</button>
@@ -456,13 +688,16 @@
   </div>
 </div>
 
-<!-- Firebase 연결 상태 -->
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<!-- Firebase 상태 -->
 <div class="fb-status" id="fb-status">
   <div class="fb-dot loading" id="fb-dot"></div>
   <span id="fb-text">연결 중...</span>
 </div>
 
-<!-- localStorage → Firebase 마이그레이션 안내 배너 -->
+<!-- 마이그레이션 배너 -->
 <div class="migrate-banner" id="migrate-banner">
   📦 로컬에 저장된 기존 데이터를 Firebase로 옮길까요?
   <div class="migrate-btns">
@@ -474,8 +709,6 @@
 <script>
   // ══════════════════════════════════════════════════════════════
   //  🔥 Firebase 설정
-  //  Firebase 콘솔(https://console.firebase.google.com) →
-  //  프로젝트 설정 → 내 앱 → SDK 설정 및 구성 에서 복사해서 붙여넣기
   // ══════════════════════════════════════════════════════════════
   const firebaseConfig = {
     apiKey:            "AIzaSyC0-fkZLIBHdkkLqeWl-mXeBqbaN7dHSmk",
@@ -487,24 +720,19 @@
   };
   // ══════════════════════════════════════════════════════════════
 
-  // ─── 상수 ───
   const MONTH_NAMES = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
   const DAY_KO      = ['일','월','화','수','목','금','토'];
   const LS_KEY      = 'sales-data';
   const LS_MIGRATED = 'sales-migrated';
 
-  // ─── 날짜 초기값 ───
   const todayDate  = new Date();
   const todayKey   = fmt(todayDate.getFullYear(), todayDate.getMonth()+1, todayDate.getDate());
   let currentYear  = todayDate.getFullYear();
   let currentMonth = todayDate.getMonth();
   let selectedKey  = null;
   let isSaving     = false;
-
-  // ─── 데이터 저장소 ───
   let sales = {};
 
-  // ─── Firebase 초기화 ───
   const USE_FIREBASE = !!(firebaseConfig.apiKey && firebaseConfig.projectId);
   let db = null;
 
@@ -517,30 +745,21 @@
     try {
       firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
-
-      // 실시간 동기화 (onSnapshot)
       db.collection('sales').onSnapshot(snapshot => {
         sales = {};
-        snapshot.forEach(doc => {
-          sales[doc.id] = doc.data();
-        });
+        snapshot.forEach(doc => { sales[doc.id] = doc.data(); });
         buildCalendar();
         setStatus('connected', 'Firebase 연결됨');
-
-        // 로컬 데이터가 있고 아직 마이그레이션 안 했으면 배너 표시
         const localData = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
-        const migrated  = localStorage.getItem(LS_MIGRATED);
-        if (!migrated && Object.keys(localData).length > 0) {
+        if (!localStorage.getItem(LS_MIGRATED) && Object.keys(localData).length > 0) {
           document.getElementById('migrate-banner').classList.add('show');
         }
       }, err => {
         console.error('Firestore 오류:', err);
         setStatus('error', '연결 실패');
-        // fallback: localStorage
         sales = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
         buildCalendar();
       });
-
     } catch(e) {
       console.error('Firebase 초기화 오류:', e);
       setStatus('error', '초기화 실패');
@@ -548,7 +767,6 @@
       buildCalendar();
     }
   } else {
-    // Firebase 미설정 → localStorage 모드
     setStatus('local', '로컬 저장');
     sales = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
     buildCalendar();
@@ -558,7 +776,6 @@
   function fmt(y, m, d) {
     return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
   }
-
   function fmtMoney(n) {
     if (!n || n === 0) return '-';
     if (n >= 100000000) return (n / 100000000).toFixed(1).replace(/\.0$/, '') + '억';
@@ -567,13 +784,54 @@
     if (n >= 10000)     return (n / 10000).toFixed(1).replace(/\.0$/, '') + '만';
     return n.toLocaleString();
   }
-
   function fmtMoneyFull(n) {
     if (!n || n === 0) return '0원';
     return n.toLocaleString('ko-KR') + '원';
   }
+  function fmtQty(n) {
+    if (!n || n === 0) return '-';
+    return n.toLocaleString() + '개';
+  }
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
 
-  // ─── 캘린더 렌더링 ───
+  // ─── 스테퍼 로직 ───
+  function stepOrders(delta) {
+    const el = document.getElementById('input-orders');
+    const v = Math.max(0, (parseInt(el.value) || 0) + delta);
+    el.value = v;
+  }
+  function clampOrders() {
+    const el = document.getElementById('input-orders');
+    if ((parseInt(el.value) || 0) < 0) el.value = 0;
+  }
+  function stepConsumed(delta) {
+    const el = document.getElementById('input-consumed');
+    const v = Math.max(0, (parseInt(el.value) || 0) + delta);
+    el.value = v;
+  }
+  function clampConsumed() {
+    const el = document.getElementById('input-consumed');
+    if ((parseInt(el.value) || 0) < 0) el.value = 0;
+  }
+  function toggleConsumed() {
+    const on = document.getElementById('consumed-toggle').checked;
+    const wrap = document.getElementById('consumed-stepper-wrap');
+    if (on) {
+      wrap.classList.add('open');
+      const el = document.getElementById('input-consumed');
+      if ((parseInt(el.value) || 0) === 0) el.value = 1;
+    } else {
+      wrap.classList.remove('open');
+      document.getElementById('input-consumed').value = 0;
+    }
+  }
+
+  // ─── 캘린더 ───
   function buildCalendar() {
     const y = currentYear, m = currentMonth;
     document.getElementById('month-label').innerHTML =
@@ -585,7 +843,6 @@
     const firstDay    = new Date(y, m, 1).getDay();
     const daysInMonth = new Date(y, m+1, 0).getDate();
 
-    // 주별 그룹핑
     const weeks = [];
     let week = Array(firstDay).fill(null);
     for (let d = 1; d <= daysInMonth; d++) {
@@ -597,25 +854,25 @@
 
     grid.style.gridTemplateRows = `repeat(${weeks.length}, 1fr)`;
 
-    let monthCard = 0, monthCash = 0, monthDays = 0;
+    let mCard = 0, mCash = 0, mOrders = 0, mConsumed = 0, mDays = 0;
 
     weeks.forEach(wk => {
-      let weekCard = 0, weekCash = 0, hasData = false;
+      let wCard = 0, wCash = 0, wOrders = 0, wConsumed = 0, hasData = false;
 
       wk.forEach(d => {
         const cell = document.createElement('div');
         if (d === null) {
           cell.className = 'day-cell empty';
         } else {
-          const key   = fmt(y, m+1, d);
-          const dow   = new Date(y, m, d).getDay();
-          const entry = sales[key];
+          const key = fmt(y, m+1, d);
+          const dow = new Date(y, m, d).getDay();
+          const e   = sales[key];
 
           let cls = 'day-cell';
           if (dow === 0) cls += ' sun';
           if (dow === 6) cls += ' sat';
           if (key === todayKey) cls += ' today';
-          if (entry) cls += ' has-data';
+          if (e) cls += ' has-data';
           cell.className = cls;
 
           const num = document.createElement('div');
@@ -623,12 +880,13 @@
           num.textContent = d;
           cell.appendChild(num);
 
-          if (entry) {
-            const card  = entry.card  || 0;
-            const cash  = entry.cash  || 0;
+          if (e) {
+            const card = e.card || 0, cash = e.cash || 0;
+            const orders = e.orders || 0, consumed = e.consumed || 0;
             const total = card + cash;
-            weekCard += card; weekCash += cash; hasData = true;
-            monthCard += card; monthCash += cash; monthDays++;
+            wCard += card; wCash += cash; wOrders += orders; wConsumed += consumed;
+            hasData = true;
+            mCard += card; mCash += cash; mOrders += orders; mConsumed += consumed; mDays++;
 
             const totalEl = document.createElement('div');
             totalEl.className = 'cell-total';
@@ -636,67 +894,81 @@
             cell.appendChild(totalEl);
 
             if (card > 0) {
-              const row = document.createElement('div');
-              row.className = 'cell-row';
-              row.innerHTML = `<span class="cell-dot card"></span><span class="cell-amount">${fmtMoney(card)}</span>`;
-              cell.appendChild(row);
+              const r = document.createElement('div'); r.className = 'cell-row';
+              r.innerHTML = `<span class="cell-dot card"></span><span class="cell-amount">${fmtMoney(card)}</span>`;
+              cell.appendChild(r);
             }
             if (cash > 0) {
-              const row = document.createElement('div');
-              row.className = 'cell-row';
-              row.innerHTML = `<span class="cell-dot cash"></span><span class="cell-amount">${fmtMoney(cash)}</span>`;
-              cell.appendChild(row);
+              const r = document.createElement('div'); r.className = 'cell-row';
+              r.innerHTML = `<span class="cell-dot cash"></span><span class="cell-amount">${fmtMoney(cash)}</span>`;
+              cell.appendChild(r);
+            }
+            if (orders > 0) {
+              const r = document.createElement('div'); r.className = 'cell-row';
+              r.innerHTML = `<span class="cell-dot orders"></span><span class="cell-amount">주문 ${orders}</span>`;
+              cell.appendChild(r);
+            }
+            if (consumed > 0) {
+              const r = document.createElement('div'); r.className = 'cell-row';
+              r.innerHTML = `<span class="cell-dot consumed"></span><span class="cell-amount">소진 ${consumed}</span>`;
+              cell.appendChild(r);
             }
           }
-
           cell.addEventListener('click', () => openModal(key, m, d, dow));
         }
         grid.appendChild(cell);
       });
 
-      // 주간 합계 셀
-      const weekCell = document.createElement('div');
+      // 주간 합계
+      const wc = document.createElement('div');
       if (!hasData) {
-        weekCell.className = 'week-cell empty-week';
+        wc.className = 'week-cell empty-week';
       } else {
-        const weekTotal = weekCard + weekCash;
-        weekCell.className = 'week-cell';
-        weekCell.innerHTML = `
-          <div class="week-label">주간</div>
-          <div class="week-row">
-            <div class="week-item card">
-              <span class="label">카드</span>
-              <span class="val">${fmtMoney(weekCard)}</span>
-            </div>
-            <div class="week-item cash">
-              <span class="label">현금</span>
-              <span class="val">${fmtMoney(weekCash)}</span>
-            </div>
-          </div>
-          <div class="week-divider"></div>
-          <div class="week-total-row">${fmtMoney(weekTotal)}</div>
-        `;
+        wc.className = 'week-cell';
+        let h = `<div class="week-label">주간</div><div class="week-row">
+          <div class="week-item card"><span class="label">카드</span><span class="val">${fmtMoney(wCard)}</span></div>
+          <div class="week-item cash"><span class="label">현금</span><span class="val">${fmtMoney(wCash)}</span></div>`;
+        if (wOrders > 0) h += `<div class="week-item orders"><span class="label">주문</span><span class="val">${wOrders.toLocaleString()}</span></div>`;
+        if (wConsumed > 0) h += `<div class="week-item consumed"><span class="label">소진</span><span class="val">${wConsumed.toLocaleString()}</span></div>`;
+        h += `</div><div class="week-divider"></div><div class="week-total-row">${fmtMoney(wCard + wCash)}</div>`;
+        wc.innerHTML = h;
       }
-      grid.appendChild(weekCell);
+      grid.appendChild(wc);
     });
 
-    // 월간 요약
-    const monthTotal = monthCard + monthCash;
-    document.getElementById('sum-card').textContent  = monthCard  > 0 ? fmtMoneyFull(monthCard)  : '-';
-    document.getElementById('sum-cash').textContent  = monthCash  > 0 ? fmtMoneyFull(monthCash)  : '-';
-    document.getElementById('sum-total').textContent = monthTotal > 0 ? fmtMoneyFull(monthTotal) : '-';
-    document.getElementById('sum-days').textContent  = monthDays  > 0 ? monthDays + '일'          : '-';
+    const mTotal = mCard + mCash;
+    document.getElementById('sum-card').textContent     = mCard     > 0 ? fmtMoneyFull(mCard)  : '-';
+    document.getElementById('sum-cash').textContent     = mCash     > 0 ? fmtMoneyFull(mCash)  : '-';
+    document.getElementById('sum-total').textContent    = mTotal    > 0 ? fmtMoneyFull(mTotal) : '-';
+    document.getElementById('sum-orders').textContent   = mOrders   > 0 ? fmtQty(mOrders)      : '-';
+    document.getElementById('sum-consumed').textContent = mConsumed > 0 ? fmtQty(mConsumed)    : '-';
+    document.getElementById('sum-days').textContent     = mDays     > 0 ? mDays + '일'          : '-';
   }
 
   // ─── 모달 ───
   function openModal(key, month, day, dow) {
     selectedKey = key;
-    const entry = sales[key] || {};
+    const e = sales[key] || {};
     document.getElementById('modal-date').textContent =
       `${currentYear}년 ${MONTH_NAMES[month]} ${day}일 (${DAY_KO[dow]})`;
-    document.getElementById('input-card').value = entry.card || '';
-    document.getElementById('input-cash').value = entry.cash || '';
-    document.getElementById('btn-delete').style.display = sales[key] ? 'inline-block' : 'none';
+    document.getElementById('input-card').value     = e.card || '';
+    document.getElementById('input-cash').value     = e.cash || '';
+    document.getElementById('input-orders').value   = e.orders || 0;
+
+    const consumed = e.consumed || 0;
+    document.getElementById('input-consumed').value = consumed;
+    const toggle = document.getElementById('consumed-toggle');
+    const wrap   = document.getElementById('consumed-stepper-wrap');
+    if (consumed > 0) {
+      toggle.checked = true;
+      wrap.classList.add('open');
+    } else {
+      toggle.checked = false;
+      wrap.classList.remove('open');
+    }
+
+    document.getElementById('btn-delete').style.display   = sales[key] ? 'inline-block' : 'none';
+    document.getElementById('btn-copy-day').style.display  = sales[key] ? 'block' : 'none';
     document.getElementById('btn-save').disabled = false;
     updateModalTotal();
     document.getElementById('modal-overlay').classList.add('open');
@@ -708,7 +980,6 @@
     const cash = parseInt(document.getElementById('input-cash').value) || 0;
     document.getElementById('modal-total-value').textContent = fmtMoneyFull(card + cash);
   }
-
   document.getElementById('input-card').addEventListener('input', updateModalTotal);
   document.getElementById('input-cash').addEventListener('input', updateModalTotal);
 
@@ -721,26 +992,27 @@
   // ─── 저장 ───
   async function saveEntry() {
     if (isSaving) return;
-    const card = parseInt(document.getElementById('input-card').value) || 0;
-    const cash = parseInt(document.getElementById('input-cash').value) || 0;
-    if (card === 0 && cash === 0) { deleteEntry(); return; }
+    const card     = parseInt(document.getElementById('input-card').value)     || 0;
+    const cash     = parseInt(document.getElementById('input-cash').value)     || 0;
+    const orders   = parseInt(document.getElementById('input-orders').value)   || 0;
+    const consumed = parseInt(document.getElementById('input-consumed').value) || 0;
+    if (card === 0 && cash === 0 && orders === 0 && consumed === 0) { deleteEntry(); return; }
 
     isSaving = true;
     document.getElementById('btn-save').disabled = true;
+    const data = { card, cash, orders, consumed };
 
     if (USE_FIREBASE && db) {
-      try {
-        await db.collection('sales').doc(selectedKey).set({ card, cash });
-        // onSnapshot이 자동으로 buildCalendar() 호출
-      } catch(e) {
+      try { await db.collection('sales').doc(selectedKey).set(data); }
+      catch(e) {
         console.error('저장 오류:', e);
-        alert('저장 중 오류가 발생했습니다. 다시 시도해주세요.');
+        alert('저장 중 오류가 발생했습니다.');
         document.getElementById('btn-save').disabled = false;
         isSaving = false;
         return;
       }
     } else {
-      sales[selectedKey] = { card, cash };
+      sales[selectedKey] = data;
       localStorage.setItem(LS_KEY, JSON.stringify(sales));
       buildCalendar();
     }
@@ -750,13 +1022,8 @@
   // ─── 삭제 ───
   async function deleteEntry() {
     if (USE_FIREBASE && db) {
-      try {
-        await db.collection('sales').doc(selectedKey).delete();
-      } catch(e) {
-        console.error('삭제 오류:', e);
-        alert('삭제 중 오류가 발생했습니다.');
-        return;
-      }
+      try { await db.collection('sales').doc(selectedKey).delete(); }
+      catch(e) { console.error('삭제 오류:', e); alert('삭제 중 오류가 발생했습니다.'); return; }
     } else {
       delete sales[selectedKey];
       localStorage.setItem(LS_KEY, JSON.stringify(sales));
@@ -765,21 +1032,82 @@
     closeModal();
   }
 
-  // ─── localStorage → Firebase 마이그레이션 ───
+  // ─── 복사: 일별 ───
+  function copyDaySummary() {
+    if (!selectedKey) return;
+    const e = sales[selectedKey];
+    if (!e) return;
+
+    const dateText = document.getElementById('modal-date').textContent;
+    const card = e.card || 0, cash = e.cash || 0;
+    const orders = e.orders || 0, consumed = e.consumed || 0;
+    const total = card + cash;
+
+    let t = `📊 ${dateText} 매출\n━━━━━━━━━━━━━━\n`;
+    if (card > 0)     t += `💳 카드: ${fmtMoneyFull(card)}\n`;
+    if (cash > 0)     t += `💵 현금: ${fmtMoneyFull(cash)}\n`;
+    t += `✅ 합계: ${fmtMoneyFull(total)}\n`;
+    if (orders > 0)   t += `📦 주문량: ${orders.toLocaleString()}개\n`;
+    if (consumed > 0) t += `🔥 소진량: ${consumed.toLocaleString()}개\n`;
+
+    copyText(t, '📋 매출 정보가 복사되었습니다');
+  }
+
+  // ─── 복사: 월간 ───
+  function copyMonthSummary() {
+    const y = currentYear, m = currentMonth;
+    const dim = new Date(y, m+1, 0).getDate();
+    let tCard = 0, tCash = 0, tOrders = 0, tConsumed = 0;
+    let lines = [], biz = 0;
+
+    for (let d = 1; d <= dim; d++) {
+      const key = fmt(y, m+1, d);
+      const e = sales[key];
+      if (!e) continue;
+      const card = e.card || 0, cash = e.cash || 0;
+      const orders = e.orders || 0, consumed = e.consumed || 0;
+      tCard += card; tCash += cash; tOrders += orders; tConsumed += consumed; biz++;
+      const dow = new Date(y, m, d).getDay();
+      let line = `${d}일(${DAY_KO[dow]}) ${fmtMoneyFull(card + cash)}`;
+      const ex = [];
+      if (orders > 0) ex.push(`주문${orders}`);
+      if (consumed > 0) ex.push(`소진${consumed}`);
+      if (ex.length) line += ` [${ex.join('/')}]`;
+      lines.push(line);
+    }
+
+    let t = `📊 ${y}년 ${MONTH_NAMES[m]} 매출 현황\n━━━━━━━━━━━━━━\n`;
+    t += lines.join('\n') + '\n━━━━━━━━━━━━━━\n';
+    t += `💳 카드 합계: ${fmtMoneyFull(tCard)}\n`;
+    t += `💵 현금 합계: ${fmtMoneyFull(tCash)}\n`;
+    t += `✅ 총 매출: ${fmtMoneyFull(tCard + tCash)}\n`;
+    if (tOrders > 0)   t += `📦 총 주문량: ${tOrders.toLocaleString()}개\n`;
+    if (tConsumed > 0) t += `🔥 총 소진량: ${tConsumed.toLocaleString()}개\n`;
+    t += `📅 영업일수: ${biz}일\n`;
+
+    copyText(t, '📋 월간 매출이 복사되었습니다');
+  }
+
+  function copyText(text, msg) {
+    navigator.clipboard.writeText(text).then(() => showToast(msg)).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast(msg);
+    });
+  }
+
+  // ─── 마이그레이션 ───
   async function migrateFromLocal() {
     const localData = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
     const keys = Object.keys(localData);
     if (keys.length === 0) { dismissMigrate(); return; }
-
     document.querySelector('.btn-migrate').textContent = '가져오는 중...';
     document.querySelector('.btn-migrate').disabled = true;
-
     try {
       const batch = db.batch();
-      keys.forEach(key => {
-        const ref = db.collection('sales').doc(key);
-        batch.set(ref, localData[key], { merge: true });
-      });
+      keys.forEach(k => batch.set(db.collection('sales').doc(k), localData[k], { merge: true }));
       await batch.commit();
       localStorage.setItem(LS_MIGRATED, '1');
       dismissMigrate();
@@ -791,7 +1119,6 @@
       document.querySelector('.btn-migrate').disabled = false;
     }
   }
-
   function dismissMigrate() {
     localStorage.setItem(LS_MIGRATED, '1');
     document.getElementById('migrate-banner').classList.remove('show');
@@ -799,17 +1126,15 @@
 
   // ─── 월 이동 ───
   document.getElementById('btn-prev').onclick = () => {
-    if (currentMonth === 0) { currentMonth = 11; currentYear--; }
-    else currentMonth--;
+    if (currentMonth === 0) { currentMonth = 11; currentYear--; } else currentMonth--;
     buildCalendar();
   };
   document.getElementById('btn-next').onclick = () => {
-    if (currentMonth === 11) { currentMonth = 0; currentYear++; }
-    else currentMonth++;
+    if (currentMonth === 11) { currentMonth = 0; currentYear++; } else currentMonth++;
     buildCalendar();
   };
 
-  // ─── 키보드 단축키 ───
+  // ─── 단축키 ───
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeModal();
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') saveEntry();
