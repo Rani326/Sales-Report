@@ -64,6 +64,16 @@
       white-space: nowrap;
     }
     .btn-copy-month:hover { background: #dddeff; }
+    .btn-manage-products {
+      border: none; background: #fff5eb;
+      border-radius: 8px; padding: 6px 10px;
+      font-size: 0.7em; font-weight: 700;
+      color: #e67e22; cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .btn-manage-products:hover { background: #ffe8cc; }
 
     /* 월간 요약 바 */
     .monthly-summary {
@@ -92,8 +102,6 @@
     .summary-value.card { color: #5568e0; }
     .summary-value.cash { color: #43a047; }
     .summary-value.total { color: #2d2d2d; }
-    .summary-value.orders { color: #e67e22; }
-    .summary-value.consumed { color: #8e44ad; }
 
     /* 요일 헤더 */
     .day-headers {
@@ -168,8 +176,7 @@
     }
     .cell-dot.card { background: #5568e0; }
     .cell-dot.cash { background: #43a047; }
-    .cell-dot.orders { background: #e67e22; }
-    .cell-dot.consumed { background: #8e44ad; }
+    .cell-dot.product { background: #e67e22; }
     .cell-amount { color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     /* 주간합계 셀 */
@@ -197,12 +204,11 @@
       gap: 3px; font-size: 0.62em;
     }
     .week-item .label {
-      font-weight: 700; width: 22px; flex-shrink: 0;
+      font-weight: 700; flex-shrink: 0;
     }
     .week-item.card .label { color: #5568e0; }
     .week-item.cash .label { color: #43a047; }
-    .week-item.orders .label { color: #e67e22; }
-    .week-item.consumed .label { color: #8e44ad; }
+    .week-item.product .label { color: #e67e22; }
     .week-item .val { color: #444; font-weight: 600; }
     .week-divider { height: 1px; background: #dddeff; margin: 2px 0; }
     .week-total-row {
@@ -211,7 +217,7 @@
       font-weight: 800; color: #4a4af4;
     }
 
-    /* ──── 모달 ──── */
+    /* ──── 모달 공통 ──── */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
       background: rgba(30,30,60,0.45);
@@ -220,7 +226,7 @@
     .modal-overlay.open { display: flex; }
     .modal {
       background: #fff; border-radius: 20px;
-      padding: 26px 24px; width: 360px;
+      padding: 26px 24px; width: 370px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.22);
       max-height: 90vh; overflow-y: auto;
     }
@@ -278,34 +284,63 @@
     .section-title {
       font-size: 0.72em; font-weight: 700; color: #bbb;
       letter-spacing: 1px; margin-bottom: 8px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .section-title .add-product-hint {
+      font-size: 0.9em; color: #e67e22; cursor: pointer;
+      font-weight: 700;
     }
 
-    /* ──── 스테퍼 (주문량) ──── */
-    .stepper-row {
+    /* ──── 품목별 스테퍼 ──── */
+    .product-section {
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .product-item {
+      background: #fafafa;
+      border: 1.5px solid #f0f0f0;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .product-name {
+      font-size: 0.82em; font-weight: 800;
+      color: #e67e22; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .product-name .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #e67e22;
+      flex-shrink: 0;
+    }
+    .product-rows {
       display: flex; flex-direction: column; gap: 6px;
     }
-    .stepper-label {
-      font-size: 0.75em; font-weight: 700;
-      letter-spacing: 1px;
+    .product-row {
+      display: flex; align-items: center; gap: 8px;
     }
-    .stepper-label.orders { color: #e67e22; }
-    .stepper-label.consumed { color: #8e44ad; }
+    .product-row-label {
+      font-size: 0.72em; font-weight: 700;
+      width: 42px; flex-shrink: 0;
+    }
+    .product-row-label.orders { color: #e67e22; }
+    .product-row-label.consumed { color: #8e44ad; }
 
     .stepper {
       display: flex; align-items: center; gap: 0;
-      background: #fafafa;
+      background: #fff;
       border: 1.5px solid #eee;
-      border-radius: 12px;
+      border-radius: 10px;
       overflow: hidden;
-      height: 48px;
+      height: 44px;
+      flex: 1;
     }
     .stepper.orders-stepper { border-color: #f5d6b0; }
     .stepper.consumed-stepper { border-color: #d8b4e8; }
 
     .stepper-btn {
-      width: 54px; height: 100%;
+      width: 50px; height: 100%;
       border: none; background: transparent;
-      font-size: 1.5em; font-weight: 700;
+      font-size: 1.4em; font-weight: 700;
       cursor: pointer; font-family: inherit;
       display: flex; align-items: center; justify-content: center;
       transition: background 0.12s;
@@ -315,24 +350,20 @@
     .stepper-btn:active { background: #eee; }
     .stepper-btn.minus { color: #ef5350; border-right: 1px solid #eee; }
     .stepper-btn.plus  { color: #4a4af4; border-left: 1px solid #eee; }
-    .stepper-btn:disabled { color: #ddd; cursor: default; }
-    .stepper-btn:disabled:active { background: transparent; }
 
     .stepper-value {
       flex: 1;
       text-align: center;
-      font-size: 1.2em;
+      font-size: 1.1em;
       font-weight: 800;
       color: #2d2d2d;
-      display: flex; align-items: center; justify-content: center; gap: 4px;
+      display: flex; align-items: center; justify-content: center; gap: 3px;
     }
     .stepper-value .unit {
-      font-size: 0.65em; color: #aaa; font-weight: 600;
+      font-size: 0.6em; color: #aaa; font-weight: 600;
     }
-
-    /* 직접입력 */
     .stepper-value input {
-      width: 60px;
+      width: 50px;
       border: none; background: transparent;
       font-size: 1em; font-weight: 800;
       text-align: center;
@@ -346,57 +377,13 @@
       -webkit-appearance: none; margin: 0;
     }
 
-    /* ──── 소진량 체크박스 + 스테퍼 ──── */
-    .consumed-header {
-      display: flex; align-items: center; gap: 10px;
-    }
-    .consumed-check {
-      display: flex; align-items: center; gap: 8px;
-      cursor: pointer;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-    .consumed-check input[type="checkbox"] {
-      display: none;
-    }
-    .check-box {
-      width: 24px; height: 24px;
-      border: 2px solid #d0d0d0;
-      border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.15s;
-      flex-shrink: 0;
-    }
-    .check-box::after {
-      content: '';
-      width: 12px; height: 12px;
-      border-radius: 3px;
-      background: #8e44ad;
-      transform: scale(0);
-      transition: transform 0.15s;
-    }
-    .consumed-check input:checked + .check-box {
-      border-color: #8e44ad;
-    }
-    .consumed-check input:checked + .check-box::after {
-      transform: scale(1);
-    }
-    .consumed-check-label {
-      font-size: 0.75em; font-weight: 700;
-      color: #8e44ad; letter-spacing: 1px;
-    }
-
-    .consumed-stepper-wrap {
-      overflow: hidden;
-      max-height: 0;
-      opacity: 0;
-      transition: max-height 0.25s ease, opacity 0.2s ease, margin 0.25s ease;
-      margin-top: 0;
-    }
-    .consumed-stepper-wrap.open {
-      max-height: 60px;
-      opacity: 1;
-      margin-top: 6px;
+    .no-products {
+      text-align: center;
+      padding: 16px;
+      color: #bbb;
+      font-size: 0.82em;
+      font-weight: 600;
+      line-height: 1.6;
     }
 
     /* 합계 */
@@ -451,6 +438,78 @@
       transition: background 0.15s;
     }
     .btn-copy-day:hover { background: #f4f4ff; }
+
+    /* ──── 품목 관리 모달 ──── */
+    .pm-modal { width: 340px; }
+    .pm-list {
+      display: flex; flex-direction: column; gap: 8px;
+      margin-bottom: 16px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .pm-item {
+      display: flex; align-items: center;
+      background: #fafafa;
+      border: 1.5px solid #f0f0f0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      gap: 10px;
+    }
+    .pm-item .pm-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #e67e22;
+      flex-shrink: 0;
+    }
+    .pm-item .pm-name {
+      flex: 1;
+      font-size: 0.92em;
+      font-weight: 700;
+    }
+    .pm-item .pm-del {
+      width: 30px; height: 30px;
+      border: none; background: #fee;
+      border-radius: 50%;
+      color: #ef5350;
+      font-size: 1.1em; font-weight: 700;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .pm-item .pm-del:hover { background: #fcc; }
+    .pm-empty {
+      text-align: center;
+      padding: 20px;
+      color: #bbb;
+      font-size: 0.85em;
+      line-height: 1.6;
+    }
+    .pm-add-row {
+      display: flex; gap: 8px;
+      margin-bottom: 16px;
+    }
+    .pm-add-input {
+      flex: 1;
+      border: 1.5px solid #eee;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.92em;
+      font-family: inherit;
+      outline: none;
+      background: #fafafa;
+    }
+    .pm-add-input:focus { border-color: #e67e22; background: #fff; }
+    .pm-add-input::placeholder { color: #ccc; }
+    .pm-add-btn {
+      padding: 10px 16px;
+      background: #e67e22;
+      color: #fff;
+      border: none; border-radius: 10px;
+      font-size: 0.88em; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+      white-space: nowrap;
+    }
+    .pm-add-btn:hover { background: #cf6d17; }
 
     /* ── 토스트 ── */
     .toast {
@@ -551,7 +610,8 @@
       .cell-dot { width: 4px; height: 4px; }
 
       .modal { width: 92vw; padding: 22px 18px; }
-      .stepper-btn { width: 48px; font-size: 1.3em; }
+      .pm-modal { width: 92vw; }
+      .stepper-btn { width: 44px; font-size: 1.2em; }
 
       .fb-status { bottom: 10px; right: 10px; font-size: 0.62em; padding: 4px 9px; }
     }
@@ -564,7 +624,8 @@
     <button class="nav-btn" id="btn-prev">&#8592;</button>
     <div class="month-label" id="month-label"></div>
     <div class="header-actions">
-      <button class="btn-copy-month" onclick="copyMonthSummary()">📋 월간 복사</button>
+      <button class="btn-manage-products" onclick="openProductManager()">📦 품목관리</button>
+      <button class="btn-copy-month" onclick="copyMonthSummary()">📋 월간복사</button>
       <button class="nav-btn" id="btn-next">&#8594;</button>
     </div>
   </div>
@@ -580,18 +641,6 @@
     <div class="summary-item">
       <div class="summary-label">월 총매출</div>
       <div class="summary-value total" id="sum-total">-</div>
-    </div>
-    <div class="summary-item">
-      <div class="summary-label">총 주문량</div>
-      <div class="summary-value orders" id="sum-orders">-</div>
-    </div>
-    <div class="summary-item">
-      <div class="summary-label">총 소진량</div>
-      <div class="summary-value consumed" id="sum-consumed">-</div>
-    </div>
-    <div class="summary-item">
-      <div class="summary-label">영업일수</div>
-      <div class="summary-value total" id="sum-days">-</div>
     </div>
   </div>
 </div>
@@ -618,7 +667,6 @@
     <div class="modal-title">매출 입력</div>
 
     <div class="input-group">
-      <!-- 카드 매출 -->
       <div class="input-row card">
         <label>카드 매출</label>
         <div class="input-wrap card-wrap">
@@ -626,7 +674,6 @@
           <span class="input-unit">원</span>
         </div>
       </div>
-      <!-- 현금 매출 -->
       <div class="input-row cash">
         <label>현금 매출</label>
         <div class="input-wrap cash-wrap">
@@ -636,40 +683,13 @@
       </div>
 
       <div class="section-divider"></div>
-      <div class="section-title">수량 관리</div>
-
-      <!-- 주문량 스테퍼 -->
-      <div class="stepper-row">
-        <div class="stepper-label orders">주문량</div>
-        <div class="stepper orders-stepper">
-          <button type="button" class="stepper-btn minus" onclick="stepOrders(-1)">−</button>
-          <div class="stepper-value">
-            <input type="number" id="input-orders" value="0" min="0" inputmode="numeric" onchange="clampOrders()" />
-            <span class="unit">개</span>
-          </div>
-          <button type="button" class="stepper-btn plus" onclick="stepOrders(1)">+</button>
-        </div>
+      <div class="section-title">
+        <span>📦 품목별 수량</span>
+        <span class="add-product-hint" onclick="openProductManager()">+ 품목추가</span>
       </div>
 
-      <!-- 소진량: 체크박스 + 스테퍼 -->
-      <div class="stepper-row">
-        <div class="consumed-header">
-          <label class="consumed-check">
-            <input type="checkbox" id="consumed-toggle" onchange="toggleConsumed()" />
-            <span class="check-box"></span>
-            <span class="consumed-check-label">소진 기록</span>
-          </label>
-        </div>
-        <div class="consumed-stepper-wrap" id="consumed-stepper-wrap">
-          <div class="stepper consumed-stepper">
-            <button type="button" class="stepper-btn minus" onclick="stepConsumed(-1)">−</button>
-            <div class="stepper-value">
-              <input type="number" id="input-consumed" value="0" min="0" inputmode="numeric" onchange="clampConsumed()" />
-              <span class="unit">개</span>
-            </div>
-            <button type="button" class="stepper-btn plus" onclick="stepConsumed(1)">+</button>
-          </div>
-        </div>
+      <div class="product-section" id="product-section">
+        <!-- 품목별 스테퍼가 동적으로 생성됨 -->
       </div>
     </div>
 
@@ -684,6 +704,24 @@
       <button class="btn-save" id="btn-save" onclick="saveEntry()">저장</button>
       <button class="btn-delete" id="btn-delete" onclick="deleteEntry()">삭제</button>
       <button class="btn-cancel" onclick="closeModal()">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- ──── 품목 관리 모달 ──── -->
+<div class="modal-overlay" id="pm-overlay">
+  <div class="modal pm-modal">
+    <div class="modal-title">📦 품목 관리</div>
+
+    <div class="pm-add-row">
+      <input type="text" class="pm-add-input" id="pm-add-input" placeholder="새 품목 이름 입력" maxlength="20" />
+      <button class="pm-add-btn" onclick="addProduct()">추가</button>
+    </div>
+
+    <div class="pm-list" id="pm-list"></div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeProductManager()" style="flex:1;">닫기</button>
     </div>
   </div>
 </div>
@@ -724,6 +762,7 @@
   const DAY_KO      = ['일','월','화','수','목','금','토'];
   const LS_KEY      = 'sales-data';
   const LS_MIGRATED = 'sales-migrated';
+  const LS_PRODUCTS = 'sales-products';
 
   const todayDate  = new Date();
   const todayKey   = fmt(todayDate.getFullYear(), todayDate.getMonth()+1, todayDate.getDate());
@@ -732,6 +771,7 @@
   let selectedKey  = null;
   let isSaving     = false;
   let sales = {};
+  let products = []; // 품목 리스트
 
   const USE_FIREBASE = !!(firebaseConfig.apiKey && firebaseConfig.projectId);
   let db = null;
@@ -741,10 +781,43 @@
     document.getElementById('fb-text').textContent = text;
   }
 
+  // ─── 품목 로드/저장 ───
+  function loadProductsLocal() {
+    products = JSON.parse(localStorage.getItem(LS_PRODUCTS) || '[]');
+  }
+
+  function loadProductsFirebase() {
+    if (!db) return;
+    db.collection('config').doc('products').onSnapshot(doc => {
+      if (doc.exists && doc.data().list) {
+        products = doc.data().list;
+      } else {
+        loadProductsLocal();
+        if (products.length > 0) {
+          db.collection('config').doc('products').set({ list: products });
+        }
+      }
+      buildCalendar();
+    });
+  }
+
+  async function saveProducts() {
+    localStorage.setItem(LS_PRODUCTS, JSON.stringify(products));
+    if (USE_FIREBASE && db) {
+      try {
+        await db.collection('config').doc('products').set({ list: products });
+      } catch(e) {
+        console.error('품목 저장 오류:', e);
+      }
+    }
+  }
+
+  // ─── Firebase 초기화 ───
   if (USE_FIREBASE) {
     try {
       firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
+      loadProductsFirebase();
       db.collection('sales').onSnapshot(snapshot => {
         sales = {};
         snapshot.forEach(doc => { sales[doc.id] = doc.data(); });
@@ -758,17 +831,20 @@
         console.error('Firestore 오류:', err);
         setStatus('error', '연결 실패');
         sales = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+        loadProductsLocal();
         buildCalendar();
       });
     } catch(e) {
       console.error('Firebase 초기화 오류:', e);
       setStatus('error', '초기화 실패');
       sales = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+      loadProductsLocal();
       buildCalendar();
     }
   } else {
     setStatus('local', '로컬 저장');
     sales = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+    loadProductsLocal();
     buildCalendar();
   }
 
@@ -788,10 +864,6 @@
     if (!n || n === 0) return '0원';
     return n.toLocaleString('ko-KR') + '원';
   }
-  function fmtQty(n) {
-    if (!n || n === 0) return '-';
-    return n.toLocaleString() + '개';
-  }
   function showToast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -799,36 +871,36 @@
     setTimeout(() => t.classList.remove('show'), 2000);
   }
 
-  // ─── 스테퍼 로직 ───
-  function stepOrders(delta) {
-    const el = document.getElementById('input-orders');
-    const v = Math.max(0, (parseInt(el.value) || 0) + delta);
-    el.value = v;
+  // ─── 스테퍼 (품목별) ───
+  function stepQty(pIdx, field, delta) {
+    const el = document.getElementById(`qty-${pIdx}-${field}`);
+    if (!el) return;
+    el.value = Math.max(0, (parseInt(el.value) || 0) + delta);
   }
-  function clampOrders() {
-    const el = document.getElementById('input-orders');
+  function clampQty(pIdx, field) {
+    const el = document.getElementById(`qty-${pIdx}-${field}`);
+    if (!el) return;
     if ((parseInt(el.value) || 0) < 0) el.value = 0;
   }
-  function stepConsumed(delta) {
-    const el = document.getElementById('input-consumed');
-    const v = Math.max(0, (parseInt(el.value) || 0) + delta);
-    el.value = v;
-  }
-  function clampConsumed() {
-    const el = document.getElementById('input-consumed');
-    if ((parseInt(el.value) || 0) < 0) el.value = 0;
-  }
-  function toggleConsumed() {
-    const on = document.getElementById('consumed-toggle').checked;
-    const wrap = document.getElementById('consumed-stepper-wrap');
-    if (on) {
-      wrap.classList.add('open');
-      const el = document.getElementById('input-consumed');
-      if ((parseInt(el.value) || 0) === 0) el.value = 1;
-    } else {
-      wrap.classList.remove('open');
-      document.getElementById('input-consumed').value = 0;
+
+  // ─── 품목 요약 유틸 ───
+  function getProductSummary(entry) {
+    const p = entry.products || {};
+    // 기존 단일 orders/consumed 호환
+    const legacyOrders   = entry.orders   || 0;
+    const legacyConsumed = entry.consumed || 0;
+    let totalOrders = legacyOrders, totalConsumed = legacyConsumed;
+    const items = [];
+    for (const name of Object.keys(p)) {
+      const o = p[name].orders || 0;
+      const c = p[name].consumed || 0;
+      if (o > 0 || c > 0) {
+        items.push({ name, orders: o, consumed: c });
+        totalOrders += o;
+        totalConsumed += c;
+      }
     }
+    return { items, totalOrders, totalConsumed, legacyOrders, legacyConsumed };
   }
 
   // ─── 캘린더 ───
@@ -854,10 +926,11 @@
 
     grid.style.gridTemplateRows = `repeat(${weeks.length}, 1fr)`;
 
-    let mCard = 0, mCash = 0, mOrders = 0, mConsumed = 0, mDays = 0;
+    let mCard = 0, mCash = 0, mDays = 0;
 
     weeks.forEach(wk => {
-      let wCard = 0, wCash = 0, wOrders = 0, wConsumed = 0, hasData = false;
+      let wCard = 0, wCash = 0, hasData = false;
+      let wProducts = {};
 
       wk.forEach(d => {
         const cell = document.createElement('div');
@@ -882,17 +955,17 @@
 
           if (e) {
             const card = e.card || 0, cash = e.cash || 0;
-            const orders = e.orders || 0, consumed = e.consumed || 0;
             const total = card + cash;
-            wCard += card; wCash += cash; wOrders += orders; wConsumed += consumed;
+            wCard += card; wCash += cash;
             hasData = true;
-            mCard += card; mCash += cash; mOrders += orders; mConsumed += consumed; mDays++;
+            mCard += card; mCash += cash; mDays++;
 
-            const totalEl = document.createElement('div');
-            totalEl.className = 'cell-total';
-            totalEl.textContent = fmtMoney(total);
-            cell.appendChild(totalEl);
-
+            if (total > 0) {
+              const totalEl = document.createElement('div');
+              totalEl.className = 'cell-total';
+              totalEl.textContent = fmtMoney(total);
+              cell.appendChild(totalEl);
+            }
             if (card > 0) {
               const r = document.createElement('div'); r.className = 'cell-row';
               r.innerHTML = `<span class="cell-dot card"></span><span class="cell-amount">${fmtMoney(card)}</span>`;
@@ -903,16 +976,21 @@
               r.innerHTML = `<span class="cell-dot cash"></span><span class="cell-amount">${fmtMoney(cash)}</span>`;
               cell.appendChild(r);
             }
-            if (orders > 0) {
+
+            // 품목 요약 (셀에 주문 총합만 표시)
+            const ps = getProductSummary(e);
+            if (ps.totalOrders > 0) {
               const r = document.createElement('div'); r.className = 'cell-row';
-              r.innerHTML = `<span class="cell-dot orders"></span><span class="cell-amount">주문 ${orders}</span>`;
+              r.innerHTML = `<span class="cell-dot product"></span><span class="cell-amount">주문 ${ps.totalOrders}</span>`;
               cell.appendChild(r);
             }
-            if (consumed > 0) {
-              const r = document.createElement('div'); r.className = 'cell-row';
-              r.innerHTML = `<span class="cell-dot consumed"></span><span class="cell-amount">소진 ${consumed}</span>`;
-              cell.appendChild(r);
-            }
+
+            // 주간 품목 합산
+            ps.items.forEach(it => {
+              if (!wProducts[it.name]) wProducts[it.name] = { orders: 0, consumed: 0 };
+              wProducts[it.name].orders += it.orders;
+              wProducts[it.name].consumed += it.consumed;
+            });
           }
           cell.addEventListener('click', () => openModal(key, m, d, dow));
         }
@@ -928,8 +1006,12 @@
         let h = `<div class="week-label">주간</div><div class="week-row">
           <div class="week-item card"><span class="label">카드</span><span class="val">${fmtMoney(wCard)}</span></div>
           <div class="week-item cash"><span class="label">현금</span><span class="val">${fmtMoney(wCash)}</span></div>`;
-        if (wOrders > 0) h += `<div class="week-item orders"><span class="label">주문</span><span class="val">${wOrders.toLocaleString()}</span></div>`;
-        if (wConsumed > 0) h += `<div class="week-item consumed"><span class="label">소진</span><span class="val">${wConsumed.toLocaleString()}</span></div>`;
+        for (const pn of Object.keys(wProducts)) {
+          const wp = wProducts[pn];
+          if (wp.orders > 0) {
+            h += `<div class="week-item product"><span class="label">${pn}</span><span class="val">${wp.orders}</span></div>`;
+          }
+        }
         h += `</div><div class="week-divider"></div><div class="week-total-row">${fmtMoney(wCard + wCash)}</div>`;
         wc.innerHTML = h;
       }
@@ -937,12 +1019,9 @@
     });
 
     const mTotal = mCard + mCash;
-    document.getElementById('sum-card').textContent     = mCard     > 0 ? fmtMoneyFull(mCard)  : '-';
-    document.getElementById('sum-cash').textContent     = mCash     > 0 ? fmtMoneyFull(mCash)  : '-';
-    document.getElementById('sum-total').textContent    = mTotal    > 0 ? fmtMoneyFull(mTotal) : '-';
-    document.getElementById('sum-orders').textContent   = mOrders   > 0 ? fmtQty(mOrders)      : '-';
-    document.getElementById('sum-consumed').textContent = mConsumed > 0 ? fmtQty(mConsumed)    : '-';
-    document.getElementById('sum-days').textContent     = mDays     > 0 ? mDays + '일'          : '-';
+    document.getElementById('sum-card').textContent  = mCard  > 0 ? fmtMoneyFull(mCard)  : '-';
+    document.getElementById('sum-cash').textContent  = mCash  > 0 ? fmtMoneyFull(mCash)  : '-';
+    document.getElementById('sum-total').textContent = mTotal > 0 ? fmtMoneyFull(mTotal) : '-';
   }
 
   // ─── 모달 ───
@@ -951,28 +1030,65 @@
     const e = sales[key] || {};
     document.getElementById('modal-date').textContent =
       `${currentYear}년 ${MONTH_NAMES[month]} ${day}일 (${DAY_KO[dow]})`;
-    document.getElementById('input-card').value     = e.card || '';
-    document.getElementById('input-cash').value     = e.cash || '';
-    document.getElementById('input-orders').value   = e.orders || 0;
+    document.getElementById('input-card').value = e.card || '';
+    document.getElementById('input-cash').value = e.cash || '';
 
-    const consumed = e.consumed || 0;
-    document.getElementById('input-consumed').value = consumed;
-    const toggle = document.getElementById('consumed-toggle');
-    const wrap   = document.getElementById('consumed-stepper-wrap');
-    if (consumed > 0) {
-      toggle.checked = true;
-      wrap.classList.add('open');
-    } else {
-      toggle.checked = false;
-      wrap.classList.remove('open');
-    }
+    renderProductSteppers(e);
 
-    document.getElementById('btn-delete').style.display   = sales[key] ? 'inline-block' : 'none';
-    document.getElementById('btn-copy-day').style.display  = sales[key] ? 'block' : 'none';
+    document.getElementById('btn-delete').style.display  = sales[key] ? 'inline-block' : 'none';
+    document.getElementById('btn-copy-day').style.display = sales[key] ? 'block' : 'none';
     document.getElementById('btn-save').disabled = false;
     updateModalTotal();
     document.getElementById('modal-overlay').classList.add('open');
     setTimeout(() => document.getElementById('input-card').focus(), 50);
+  }
+
+  function renderProductSteppers(entry) {
+    const section = document.getElementById('product-section');
+    const ep = entry.products || {};
+
+    if (products.length === 0) {
+      section.innerHTML = '<div class="no-products">등록된 품목이 없습니다.<br>위 "품목추가"를 눌러 추가하세요.</div>';
+      return;
+    }
+
+    section.innerHTML = '';
+    products.forEach((name, i) => {
+      const pd = ep[name] || {};
+      const orders = pd.orders || 0;
+      const consumed = pd.consumed || 0;
+
+      const item = document.createElement('div');
+      item.className = 'product-item';
+      item.innerHTML = `
+        <div class="product-name"><span class="dot"></span>${name}</div>
+        <div class="product-rows">
+          <div class="product-row">
+            <span class="product-row-label orders">주문</span>
+            <div class="stepper orders-stepper">
+              <button type="button" class="stepper-btn minus" onclick="stepQty(${i},'orders',-1)">−</button>
+              <div class="stepper-value">
+                <input type="number" id="qty-${i}-orders" value="${orders}" min="0" inputmode="numeric" onchange="clampQty(${i},'orders')" />
+                <span class="unit">개</span>
+              </div>
+              <button type="button" class="stepper-btn plus" onclick="stepQty(${i},'orders',1)">+</button>
+            </div>
+          </div>
+          <div class="product-row">
+            <span class="product-row-label consumed">소진</span>
+            <div class="stepper consumed-stepper">
+              <button type="button" class="stepper-btn minus" onclick="stepQty(${i},'consumed',-1)">−</button>
+              <div class="stepper-value">
+                <input type="number" id="qty-${i}-consumed" value="${consumed}" min="0" inputmode="numeric" onchange="clampQty(${i},'consumed')" />
+                <span class="unit">개</span>
+              </div>
+              <button type="button" class="stepper-btn plus" onclick="stepQty(${i},'consumed',1)">+</button>
+            </div>
+          </div>
+        </div>
+      `;
+      section.appendChild(item);
+    });
   }
 
   function updateModalTotal() {
@@ -992,15 +1108,26 @@
   // ─── 저장 ───
   async function saveEntry() {
     if (isSaving) return;
-    const card     = parseInt(document.getElementById('input-card').value)     || 0;
-    const cash     = parseInt(document.getElementById('input-cash').value)     || 0;
-    const orders   = parseInt(document.getElementById('input-orders').value)   || 0;
-    const consumed = parseInt(document.getElementById('input-consumed').value) || 0;
-    if (card === 0 && cash === 0 && orders === 0 && consumed === 0) { deleteEntry(); return; }
+    const card = parseInt(document.getElementById('input-card').value) || 0;
+    const cash = parseInt(document.getElementById('input-cash').value) || 0;
+
+    // 품목별 수량 수집
+    const prodData = {};
+    let hasAnyQty = false;
+    products.forEach((name, i) => {
+      const o = parseInt(document.getElementById(`qty-${i}-orders`)?.value) || 0;
+      const c = parseInt(document.getElementById(`qty-${i}-consumed`)?.value) || 0;
+      if (o > 0 || c > 0) {
+        prodData[name] = { orders: o, consumed: c };
+        hasAnyQty = true;
+      }
+    });
+
+    if (card === 0 && cash === 0 && !hasAnyQty) { deleteEntry(); return; }
 
     isSaving = true;
     document.getElementById('btn-save').disabled = true;
-    const data = { card, cash, orders, consumed };
+    const data = { card, cash, products: prodData };
 
     if (USE_FIREBASE && db) {
       try { await db.collection('sales').doc(selectedKey).set(data); }
@@ -1040,15 +1167,23 @@
 
     const dateText = document.getElementById('modal-date').textContent;
     const card = e.card || 0, cash = e.cash || 0;
-    const orders = e.orders || 0, consumed = e.consumed || 0;
     const total = card + cash;
 
     let t = `📊 ${dateText} 매출\n━━━━━━━━━━━━━━\n`;
-    if (card > 0)     t += `💳 카드: ${fmtMoneyFull(card)}\n`;
-    if (cash > 0)     t += `💵 현금: ${fmtMoneyFull(cash)}\n`;
-    t += `✅ 합계: ${fmtMoneyFull(total)}\n`;
-    if (orders > 0)   t += `📦 주문량: ${orders.toLocaleString()}개\n`;
-    if (consumed > 0) t += `🔥 소진량: ${consumed.toLocaleString()}개\n`;
+    if (card > 0) t += `💳 카드: ${fmtMoneyFull(card)}\n`;
+    if (cash > 0) t += `💵 현금: ${fmtMoneyFull(cash)}\n`;
+    if (total > 0) t += `✅ 합계: ${fmtMoneyFull(total)}\n`;
+
+    const ps = getProductSummary(e);
+    if (ps.items.length > 0) {
+      t += `\n📦 품목별 수량\n`;
+      ps.items.forEach(it => {
+        let line = `  • ${it.name}:`;
+        if (it.orders > 0) line += ` 주문 ${it.orders}개`;
+        if (it.consumed > 0) line += ` / 소진 ${it.consumed}개`;
+        t += line + '\n';
+      });
+    }
 
     copyText(t, '📋 매출 정보가 복사되었습니다');
   }
@@ -1057,23 +1192,36 @@
   function copyMonthSummary() {
     const y = currentYear, m = currentMonth;
     const dim = new Date(y, m+1, 0).getDate();
-    let tCard = 0, tCash = 0, tOrders = 0, tConsumed = 0;
+    let tCard = 0, tCash = 0;
     let lines = [], biz = 0;
+    let monthProducts = {};
 
     for (let d = 1; d <= dim; d++) {
       const key = fmt(y, m+1, d);
       const e = sales[key];
       if (!e) continue;
       const card = e.card || 0, cash = e.cash || 0;
-      const orders = e.orders || 0, consumed = e.consumed || 0;
-      tCard += card; tCash += cash; tOrders += orders; tConsumed += consumed; biz++;
+      tCard += card; tCash += cash; biz++;
       const dow = new Date(y, m, d).getDay();
       let line = `${d}일(${DAY_KO[dow]}) ${fmtMoneyFull(card + cash)}`;
-      const ex = [];
-      if (orders > 0) ex.push(`주문${orders}`);
-      if (consumed > 0) ex.push(`소진${consumed}`);
-      if (ex.length) line += ` [${ex.join('/')}]`;
+
+      const ps = getProductSummary(e);
+      if (ps.items.length > 0) {
+        const ex = ps.items.map(it => {
+          let s = it.name;
+          if (it.orders > 0) s += ` 주문${it.orders}`;
+          if (it.consumed > 0) s += ` 소진${it.consumed}`;
+          return s;
+        });
+        line += ` [${ex.join(', ')}]`;
+      }
       lines.push(line);
+
+      ps.items.forEach(it => {
+        if (!monthProducts[it.name]) monthProducts[it.name] = { orders: 0, consumed: 0 };
+        monthProducts[it.name].orders += it.orders;
+        monthProducts[it.name].consumed += it.consumed;
+      });
     }
 
     let t = `📊 ${y}년 ${MONTH_NAMES[m]} 매출 현황\n━━━━━━━━━━━━━━\n`;
@@ -1081,9 +1229,19 @@
     t += `💳 카드 합계: ${fmtMoneyFull(tCard)}\n`;
     t += `💵 현금 합계: ${fmtMoneyFull(tCash)}\n`;
     t += `✅ 총 매출: ${fmtMoneyFull(tCard + tCash)}\n`;
-    if (tOrders > 0)   t += `📦 총 주문량: ${tOrders.toLocaleString()}개\n`;
-    if (tConsumed > 0) t += `🔥 총 소진량: ${tConsumed.toLocaleString()}개\n`;
     t += `📅 영업일수: ${biz}일\n`;
+
+    const mpKeys = Object.keys(monthProducts);
+    if (mpKeys.length > 0) {
+      t += `\n📦 품목별 월간 합계\n`;
+      mpKeys.forEach(name => {
+        const mp = monthProducts[name];
+        let line = `  • ${name}:`;
+        if (mp.orders > 0) line += ` 주문 ${mp.orders}개`;
+        if (mp.consumed > 0) line += ` / 소진 ${mp.consumed}개`;
+        t += line + '\n';
+      });
+    }
 
     copyText(t, '📋 월간 매출이 복사되었습니다');
   }
@@ -1097,6 +1255,61 @@
       showToast(msg);
     });
   }
+
+  // ─── 품목 관리 ───
+  function openProductManager() {
+    closeModal();
+    renderProductList();
+    document.getElementById('pm-overlay').classList.add('open');
+    setTimeout(() => document.getElementById('pm-add-input').focus(), 50);
+  }
+  function closeProductManager() {
+    document.getElementById('pm-overlay').classList.remove('open');
+  }
+
+  function renderProductList() {
+    const list = document.getElementById('pm-list');
+    if (products.length === 0) {
+      list.innerHTML = '<div class="pm-empty">등록된 품목이 없습니다.<br>위에서 품목을 추가해주세요!</div>';
+      return;
+    }
+    list.innerHTML = products.map((name, i) => `
+      <div class="pm-item">
+        <span class="pm-dot"></span>
+        <span class="pm-name">${name}</span>
+        <button class="pm-del" onclick="removeProduct(${i})" title="삭제">✕</button>
+      </div>
+    `).join('');
+  }
+
+  async function addProduct() {
+    const input = document.getElementById('pm-add-input');
+    const name = input.value.trim();
+    if (!name) return;
+    if (products.includes(name)) {
+      showToast('이미 등록된 품목입니다');
+      return;
+    }
+    products.push(name);
+    await saveProducts();
+    input.value = '';
+    renderProductList();
+    showToast(`"${name}" 품목이 추가되었습니다`);
+    input.focus();
+  }
+
+  async function removeProduct(index) {
+    const name = products[index];
+    if (!confirm(`"${name}" 품목을 삭제할까요?\n(기존 데이터는 유지됩니다)`)) return;
+    products.splice(index, 1);
+    await saveProducts();
+    renderProductList();
+    showToast(`"${name}" 품목이 삭제되었습니다`);
+  }
+
+  document.getElementById('pm-add-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addProduct();
+  });
 
   // ─── 마이그레이션 ───
   async function migrateFromLocal() {
@@ -1136,15 +1349,26 @@
 
   // ─── 단축키 ───
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeModal();
+    if (e.key === 'Escape') {
+      if (document.getElementById('pm-overlay').classList.contains('open')) {
+        closeProductManager();
+      } else {
+        closeModal();
+      }
+    }
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') saveEntry();
-    if (!document.getElementById('modal-overlay').classList.contains('open')) {
+    const anyOpen = document.getElementById('modal-overlay').classList.contains('open')
+                 || document.getElementById('pm-overlay').classList.contains('open');
+    if (!anyOpen) {
       if (e.key === 'ArrowLeft')  document.getElementById('btn-prev').click();
       if (e.key === 'ArrowRight') document.getElementById('btn-next').click();
     }
   });
   document.getElementById('modal-overlay').addEventListener('click', function(e) {
     if (e.target === this) closeModal();
+  });
+  document.getElementById('pm-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeProductManager();
   });
 </script>
 </body>
